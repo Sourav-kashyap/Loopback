@@ -29,7 +29,7 @@ export class Book extends Entity {
   price: number;
 
   @property({
-    type: 'date',
+    type: 'string',
     required: true,
   })
   publishDate: string;
