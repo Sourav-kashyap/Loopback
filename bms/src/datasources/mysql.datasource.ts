@@ -9,7 +9,7 @@ const config = {
   port: 3306,
   user: 'sourav',
   password: 'sourav',
-  database: 'bms',
+  database: 'bmsLoopback',
 };
 
 // Observe application's life cycle to disconnect the datasource when

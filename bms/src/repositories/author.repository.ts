@@ -8,9 +8,7 @@ export class AuthorRepository extends DefaultCrudRepository<
   typeof Author.prototype.id,
   AuthorRelations
 > {
-  constructor(
-    @inject('datasources.mysql') dataSource: MysqlDataSource,
-  ) {
+  constructor(@inject('datasources.mysql') dataSource: MysqlDataSource) {
     super(Author, dataSource);
   }
 }

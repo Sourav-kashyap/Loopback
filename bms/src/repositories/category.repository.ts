@@ -8,9 +8,7 @@ export class CategoryRepository extends DefaultCrudRepository<
   typeof Category.prototype.id,
   CategoryRelations
 > {
-  constructor(
-    @inject('datasources.mysql') dataSource: MysqlDataSource,
-  ) {
+  constructor(@inject('datasources.mysql') dataSource: MysqlDataSource) {
     super(Category, dataSource);
   }
 }

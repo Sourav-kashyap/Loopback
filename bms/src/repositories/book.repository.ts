@@ -8,9 +8,7 @@ export class BookRepository extends DefaultCrudRepository<
   typeof Book.prototype.bookId,
   BookRelations
 > {
-  constructor(
-    @inject('datasources.mysql') dataSource: MysqlDataSource,
-  ) {
+  constructor(@inject('datasources.mysql') dataSource: MysqlDataSource) {
     super(Book, dataSource);
   }
 }

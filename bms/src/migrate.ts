@@ -1,4 +1,5 @@
 import {BmsApplication} from './application';
+import {Author, Book, Category} from './models';
 
 export async function migrate(args: string[]) {
   const existingSchema = args.includes('--rebuild') ? 'drop' : 'alter';
@@ -6,7 +7,7 @@ export async function migrate(args: string[]) {
 
   const app = new BmsApplication();
   await app.boot();
-  await app.migrateSchema({existingSchema});
+  await app.migrateSchema({existingSchema, model: [Author, Book, Category]});
 
   // Connectors usually keep a pool of opened connections,
   // this keeps the process running even after all work is done.
