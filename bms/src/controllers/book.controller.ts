@@ -142,4 +142,20 @@ export class BookController {
   async deleteById(@param.path.string('id') id: string): Promise<void> {
     await this.bookRepository.deleteById(id);
   }
+
+  @get('/books')
+  async getBooksWithDetails(): Promise<Book[]> {
+    return this.bookRepository.find({
+      include: [{relation: 'author'}, {relation: 'category'}],
+    });
+  }
+
+  @get('books/{id}')
+  async getbooksByIdWithBooks(
+    @param.path.string('id') id: string,
+  ): Promise<Book> {
+    return this.bookRepository.findById(id, {
+      include: [{relation: 'author'}, {relation: 'category'}],
+    });
+  }
 }

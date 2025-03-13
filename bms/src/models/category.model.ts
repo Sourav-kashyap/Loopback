@@ -1,4 +1,5 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, model, property, hasMany} from '@loopback/repository';
+import {Book} from './book.model';
 
 @model({settings: {strict: false}})
 export class Category extends Entity {
@@ -16,11 +17,8 @@ export class Category extends Entity {
   })
   name: string;
 
-  // Define well-known properties here
-
-  // Indexer property to allow additional data
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [prop: string]: any;
+  @hasMany(() => Book) // Define the one-to-many relation
+  books: Book[];
 
   constructor(data?: Partial<Category>) {
     super(data);
@@ -28,7 +26,7 @@ export class Category extends Entity {
 }
 
 export interface CategoryRelations {
-  // describe navigational properties here
+  books?: Book[];
 }
 
 export type CategoryWithRelations = Category & CategoryRelations;

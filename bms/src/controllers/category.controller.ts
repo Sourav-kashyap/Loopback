@@ -145,4 +145,20 @@ export class CategoryController {
   async deleteById(@param.path.string('id') id: string): Promise<void> {
     await this.categoryRepository.deleteById(id);
   }
+
+  @get('/categories')
+  async getCategoriesWithBooks(): Promise<Category[]> {
+    return this.categoryRepository.find({
+      include: [{relation: 'books'}],
+    });
+  }
+
+  @get('categories/{id}')
+  async getCategoryByIdWithBooks(
+    @param.path.string('id') id: string,
+  ): Promise<Category> {
+    return this.categoryRepository.findById(id, {
+      include: [{relation: 'books'}],
+    });
+  }
 }

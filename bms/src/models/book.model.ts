@@ -1,4 +1,6 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, model, property, belongsTo} from '@loopback/repository';
+import {Author} from './author.model';
+import {Category} from './category.model';
 
 @model({settings: {strict: false}})
 export class Book extends Entity {
@@ -34,23 +36,11 @@ export class Book extends Entity {
   })
   publishDate: string;
 
-  @property({
-    type: 'string',
-    required: true,
-  })
+  @belongsTo(() => Author) // Define the many-to-one relation
   authorId: string;
 
-  @property({
-    type: 'string',
-    required: true,
-  })
+  @belongsTo(() => Category) // Define the many-to-one relation
   categoryId: string;
-
-  // Define well-known properties here
-
-  // Indexer property to allow additional data
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [prop: string]: any;
 
   constructor(data?: Partial<Book>) {
     super(data);
@@ -58,7 +48,8 @@ export class Book extends Entity {
 }
 
 export interface BookRelations {
-  // describe navigational properties here
+  author?: Author;
+  category?: Category;
 }
 
 export type BookWithRelations = Book & BookRelations;
