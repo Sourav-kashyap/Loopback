@@ -17,13 +17,17 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
+import {inject} from '@loopback/core';
 import {Book} from '../models';
 import {BookRepository} from '../repositories';
+import {BookValidatorService} from '../services';
 
 export class BookController {
   constructor(
     @repository(BookRepository)
     public bookRepository: BookRepository,
+    @inject('services.BookValidatorService')
+    private bookValidatorService: BookValidatorService,
   ) {}
 
   @post('/books')
@@ -43,6 +47,7 @@ export class BookController {
     })
     book: Book,
   ): Promise<Book> {
+    this.bookValidatorService.validateBook(book);
     return this.bookRepository.create(book);
   }
 
