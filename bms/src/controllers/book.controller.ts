@@ -73,7 +73,9 @@ export class BookController {
     },
   })
   async find(@param.filter(Book) filter?: Filter<Book>): Promise<Book[]> {
-    return this.bookRepository.find(filter);
+    return this.bookRepository.find({
+      include: [{relation: 'author'}, {relation: 'category'}],
+    });
   }
 
   @patch('/books')
@@ -108,7 +110,9 @@ export class BookController {
     @param.path.string('id') id: string,
     @param.filter(Book, {exclude: 'where'}) filter?: FilterExcludingWhere<Book>,
   ): Promise<Book> {
-    return this.bookRepository.findById(id, filter);
+    return this.bookRepository.findById(id, {
+      include: [{relation: 'author'}, {relation: 'category'}],
+    });
   }
 
   @patch('/books/{id}')
@@ -146,21 +150,5 @@ export class BookController {
   })
   async deleteById(@param.path.string('id') id: string): Promise<void> {
     await this.bookRepository.deleteById(id);
-  }
-
-  @get('/books')
-  async getBooksWithDetails(): Promise<Book[]> {
-    return this.bookRepository.find({
-      include: [{relation: 'author'}, {relation: 'category'}],
-    });
-  }
-
-  @get('books/{id}')
-  async getbooksByIdWithBooks(
-    @param.path.string('id') id: string,
-  ): Promise<Book> {
-    return this.bookRepository.findById(id, {
-      include: [{relation: 'author'}, {relation: 'category'}],
-    });
   }
 }

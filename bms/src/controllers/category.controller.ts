@@ -70,7 +70,9 @@ export class CategoryController {
   async find(
     @param.filter(Category) filter?: Filter<Category>,
   ): Promise<Category[]> {
-    return this.categoryRepository.find(filter);
+    return this.categoryRepository.find({
+      include: [{relation: 'books'}],
+    });
   }
 
   @patch('/categories')
@@ -106,7 +108,9 @@ export class CategoryController {
     @param.filter(Category, {exclude: 'where'})
     filter?: FilterExcludingWhere<Category>,
   ): Promise<Category> {
-    return this.categoryRepository.findById(id, filter);
+    return this.categoryRepository.findById(id, {
+      include: [{relation: 'books'}],
+    });
   }
 
   @patch('/categories/{id}')
@@ -144,21 +148,5 @@ export class CategoryController {
   })
   async deleteById(@param.path.string('id') id: string): Promise<void> {
     await this.categoryRepository.deleteById(id);
-  }
-
-  @get('/categories')
-  async getCategoriesWithBooks(): Promise<Category[]> {
-    return this.categoryRepository.find({
-      include: [{relation: 'books'}],
-    });
-  }
-
-  @get('categories/{id}')
-  async getCategoryByIdWithBooks(
-    @param.path.string('id') id: string,
-  ): Promise<Category> {
-    return this.categoryRepository.findById(id, {
-      include: [{relation: 'books'}],
-    });
   }
 }

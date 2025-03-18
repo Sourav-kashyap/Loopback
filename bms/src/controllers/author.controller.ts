@@ -68,7 +68,9 @@ export class AuthorController {
     },
   })
   async find(@param.filter(Author) filter?: Filter<Author>): Promise<Author[]> {
-    return this.authorRepository.find(filter);
+    return this.authorRepository.find({
+      include: [{relation: 'books'}],
+    });
   }
 
   @patch('/authors')
@@ -104,7 +106,9 @@ export class AuthorController {
     @param.filter(Author, {exclude: 'where'})
     filter?: FilterExcludingWhere<Author>,
   ): Promise<Author> {
-    return this.authorRepository.findById(id, filter);
+    return this.authorRepository.findById(id, {
+      include: [{relation: 'books'}],
+    });
   }
 
   @patch('/authors/{id}')
@@ -142,20 +146,5 @@ export class AuthorController {
   })
   async deleteById(@param.path.string('id') id: string): Promise<void> {
     await this.authorRepository.deleteById(id);
-  }
-  @get('/authors')
-  async getAuthorsWithBooks(): Promise<Author[]> {
-    return this.authorRepository.find({
-      include: [{relation: 'books'}],
-    });
-  }
-
-  @get('authors/{id}')
-  async getAuthorByIdWithBooks(
-    @param.path.string('id') id: string,
-  ): Promise<Author> {
-    return this.authorRepository.findById(id, {
-      include: [{relation: 'books'}],
-    });
   }
 }
