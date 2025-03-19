@@ -1,16 +1,35 @@
-import {injectable, BindingScope} from '@loopback/core';
+import {injectable, inject, BindingScope} from '@loopback/core';
 import {HttpErrors} from '@loopback/rest';
+import {
+  BookRepository,
+  AuthorRepository,
+  CategoryRepository,
+} from '../repositories';
 import {Book} from '../models';
 
 @injectable({scope: BindingScope.TRANSIENT})
 export class BookValidatorService {
-  constructor() {}
+  constructor(
+    @inject('repositories.BookRepository')
+    private readonly bookRepo: BookRepository,
+    @inject('repositories.AuthorRepository')
+    private readonly authorRepo: AuthorRepository,
+    @inject('repositories.CategoryRepository')
+    private readonly categoryRepo: CategoryRepository,
+  ) {}
 
-  validateIsbn(isbn: string): void {
+  async validateIsbn(isbn: string): Promise<void> {
     const isbnRegex = /^\d{4,7}$/;
 
     if (!isbnRegex.test(isbn)) {
       throw new HttpErrors.BadRequest('ISBN must be between 4 and 7 digits.');
+    }
+
+    const ExistingBook = await this.bookRepo.find({where: {isbn: isbn}});
+    if (ExistingBook) {
+      throw new HttpErrors.BadRequest(
+        `Book with this isbn: ${isbn} is already present in the db`,
+      );
     }
   }
 
@@ -45,6 +64,7 @@ export class BookValidatorService {
     if (!title || title.trim().length === 0) {
       throw new HttpErrors.BadRequest('Title cannot be empty.');
     }
+
     if (title.length < 3 || title.length > 100) {
       throw new HttpErrors.BadRequest(
         'Title must be between 3 and 100 characters.',
@@ -52,25 +72,34 @@ export class BookValidatorService {
     }
   }
 
-  validateAuthorId(authorId: string): void {
+  async validateAuthorId(authorId: string): Promise<void> {
     if (!authorId || authorId.trim().length === 0) {
       throw new HttpErrors.BadRequest('Author ID cannot be empty.');
     }
-  }
 
-  validateCategoryId(categoryId: string): void {
-    if (!categoryId || categoryId.trim().length === 0) {
-      throw new HttpErrors.BadRequest('Category ID cannot be empty.');
+    const isAuthorPresent = await this.authorRepo.exists(authorId);
+    if (!isAuthorPresent) {
+      throw new HttpErrors.BadRequest(`Author id ${authorId} not found`);
     }
   }
 
-  validateBook(book: Book): void {
+  async validateCategoryId(categoryId: string): Promise<void> {
+    if (!categoryId || categoryId.trim().length === 0) {
+      throw new HttpErrors.BadRequest('Category ID cannot be empty.');
+    }
+    const isCategoryPresent = await this.categoryRepo.exists(categoryId);
+    if (!isCategoryPresent) {
+      throw new HttpErrors.BadRequest(`Category id ${categoryId} not found`);
+    }
+  }
+
+  async validateBook(book: Book): Promise<void> {
     this.validateBookId(book.bookId);
     this.validateTitle(book.title);
-    this.validateIsbn(book.isbn);
+    await this.validateIsbn(book.isbn);
     this.validatePrice(book.price);
     this.validatePublishDate(book.publishDate);
-    this.validateAuthorId(book.authorId);
-    this.validateCategoryId(book.categoryId);
+    await this.validateAuthorId(book.authorId);
+    await this.validateCategoryId(book.categoryId);
   }
 }

@@ -16,6 +16,7 @@ import {
   del,
   requestBody,
   response,
+  HttpErrors,
 } from '@loopback/rest';
 import {inject} from '@loopback/core';
 import {Book} from '../models';
@@ -47,8 +48,12 @@ export class BookController {
     })
     book: Book,
   ): Promise<Book> {
-    this.bookValidatorService.validateBook(book);
-    return this.bookRepository.create(book);
+    try {
+      await this.bookValidatorService.validateBook(book);
+      return this.bookRepository.create(book);
+    } catch (error) {
+      throw new HttpErrors.BadRequest(error);
+    }
   }
 
   @get('/books/count')

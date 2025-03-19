@@ -2,7 +2,7 @@ import {Entity, model, property, belongsTo} from '@loopback/repository';
 import {Author} from './author.model';
 import {Category} from './category.model';
 
-@model({settings: {strict: false}})
+@model({settings: {strict: true}})
 export class Book extends Entity {
   @property({
     type: 'string',

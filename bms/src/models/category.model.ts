@@ -1,7 +1,7 @@
 import {Entity, model, property, hasMany} from '@loopback/repository';
 import {Book} from './book.model';
 
-@model({settings: {strict: false}})
+@model({settings: {strict: true}})
 export class Category extends Entity {
   @property({
     type: 'string',
